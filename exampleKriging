@@ -1,0 +1,31 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var Simard = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
+    geometry = 
+    /* color: #d63000 */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[9.852606749460069, 46.32247581051842],
+          [9.852606749460069, 45.90741349621637],
+          [10.649115538522569, 45.90741349621637],
+          [10.649115538522569, 46.32247581051842]]], null, false);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//two options to gap-fill a global raster (single band, single date)
+var im=Simard.selfMask().rename('test');
+Map.addLayer(im,{min:1, max:73},'Simard',false)
+
+var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL')
+
+var variogram=oeel.Image.semivariogram(im,geometry);
+
+print(ui.Chart.feature.byFeature(variogram, 'ditance', 'var'))
+
+var gapFilled=oeel.Image.kriging({covFun:function(dist){return dist.multiply(-0.1).exp().multiply(140);},
+radius:15,
+image:im});
+
+print(gapFilled)
+Map.addLayer(gapFilled.select('estimate'),{min:1, max:73},'kriged');
