@@ -28,6 +28,6 @@ radius:15,
 image:im});
 
 print(gapFilled)
-Map.addLayer(gapFilled.select('estimate'),{min:1, max:73},'kriged');
+Map.addLayer(gapFilled.select('estimate'),{min:1, max:73},'kriged',false);
 
 print('list of functions used',oeel.refs())
