@@ -1,0 +1,153 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
+    geometry = 
+    /* color: #d63000 */
+    /* displayProperties: [
+      {
+        "type": "rectangle"
+      }
+    ] */
+    ee.Geometry.Polygon(
+        [[[9.852606749460069, 46.32247581051842],
+          [9.852606749460069, 45.90741349621637],
+          [10.649115538522569, 45.90741349621637],
+          [10.649115538522569, 46.32247581051842]]], null, false);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+// options to gap-fill a raster (single band, single image)
+var im=someData.selfMask().rename('test');
+Map.addLayer(im,{min:1, max:73},'gap with data',false)
+
+print(im)
+
+var power=3;
+var halfSize=5;
+
+var kernel=ee.Kernel.square(halfSize);
+
+var r=im.neighborhoodToArray({kernel:kernel, defaultValue:0}).arrayReshape(ee.Array([-1]),1)
+var mask=im.mask().neighborhoodToArray({kernel:kernel, defaultValue:0}).arrayReshape(ee.Array([-1]),1)
+var X=ee.Image.constant(ee.Array(ee.List.sequence(-halfSize,halfSize,1))).arrayRepeat(1, halfSize*2+1).arrayReshape(ee.Array([-1]),1)
+var Y=ee.Image.constant(ee.Array(ee.List.sequence(-halfSize,halfSize,1))).arrayRepeat(1, halfSize*2+1).arrayTranspose().arrayReshape(ee.Array([-1]),1)
+
+
+var powerImage=ee.Image.constant(ee.Array(ee.List.sequence(0,power,1))).arrayReshape(ee.Array([1,-1]),2).arrayRepeat(0,mask.arrayLength(0)).arrayReshape(ee.Array([-1,power+1]),2)
+
+powerImage=powerImage.arrayMask(mask.arrayReshape(ee.Array([-1,1]),2));
+
+
+r=r.arrayMask(mask)//.arrayRepeat(1, power+1).pow(powerImage);
+X=X.arrayMask(mask).arrayRepeat(1, power+1).pow(powerImage);
+Y=Y.arrayMask(mask).arrayRepeat(1, power+1).pow(powerImage);
+
+
+var coef=X.matrixPseudoInverse()//.matrixMultiply(r.arrayReshape(ee.Array([-1,1]),2)).matrixMultiply(Y.matrixPseudoInverse());
+Map.addLayer(coef)
+
+  
+Map.addLayer(r.reproject(someData.projection()),{min:1, max:73})
+//Map.addLayer(mask.reproject(Simard.projection()),{min:1, max:73})
+
+Map.addLayer(X.reproject(someData.projection()),{min:1, max:73})
+Map.addLayer(Y.reproject(someData.projection()),{min:1, max:73})
+
+
+var halfSize=5;
+
+
+var X=ee.Array(ee.List.sequence(-halfSize,halfSize,1)).repeat(1, halfSize*2+1)//.reshape([-1]);
+var Y=ee.Array(ee.List.sequence(-halfSize,halfSize,1)).repeat(1, halfSize*2+1).transpose()//.reshape([-1]);
+//X=ee.Array(ee.List.sequence(-halfSize,halfSize,1)).repeat(1, halfSize*2+1).Reshape(ee.Array([-1]),1)
+
+var corrf=function(distK){return distK.multiply(-0.1).exp();};
+
+var numberOfElement=(halfSize*2+1)*(halfSize*2+1);
+
+var dist=ee.Array.cat([X,Y], 2);
+
+var distK=dist.reshape([-1,1,2]).repeat(1,numberOfElement).subtract(dist.reshape([1,-1,2]).repeat(0,numberOfElement));
+distK=distK.pow(2).reduce(ee.Reducer.sum(), [2]).sqrt().reshape([(halfSize*2+1)*(halfSize*2+1),(halfSize*2+1)*(halfSize*2+1)]);
+var K=corrf(distK);
+K=K.add(ee.Array.identity(numberOfElement)).pad([(numberOfElement+1),(numberOfElement+1)],1).subtract(ee.Array.identity((numberOfElement+1)));
+
+var K0=corrf(dist.pow(2).reduce(ee.Reducer.sum(), [2]).sqrt().reshape([-1,1])).pad([numberOfElement+1,0],1);
+
+var ImageK=ee.Image.constant(K);
+var ImageK0=ee.Image.constant(K0);
+
+var kernel=ee.Kernel.square(halfSize);
+var mask=im.mask().neighborhoodToArray({kernel:kernel, defaultValue:0}).arrayReshape(ee.Array([-1]),1).arrayPad([numberOfElement+1],1);
+var r=im.unmask(0).neighborhoodToArray({kernel:kernel, defaultValue:0}).arrayReshape(ee.Array([-1]),1).arrayPad([numberOfElement+1],0).arrayMask(mask);
+
+Map.addLayer(mask);
+Map.addLayer(r);
+
+print(mask)
+print(r)
+
+
+mask=mask.arrayReshape(ee.Array([-1,1]),2);
+
+//Map.addLayer(mask.matrixMultiply(mask.arrayTranspose()))
+ImageK0=ImageK0.arrayMask(mask);
+
+var dataSize=ImageK0.gt(0).arrayReduce(ee.Reducer.sum(),[0]).arrayGet([0,0]).gt(3);
+
+var coef=ImageK.arrayMask(mask).arrayTranspose().arrayMask(mask).matrixSolve(ImageK0).arrayReshape(ee.Array([-1]),1);
+print(coef)
+var estimate=coef.multiply(r).arrayReduce(ee.Reducer.sum(),[0]).arrayGet([0]).updateMask(dataSize);
+var variance=coef.multiply(ImageK0.arrayReshape(ee.Array([-1]),1)).arrayReduce(ee.Reducer.sum(),[0]).subtract(corrf(ee.Array([0]))).arrayGet([0])
+        .subtract(coef.arrayGet([-1]).multiply(2)).multiply(-1).updateMask(dataSize); 
+
+
+print(estimate)
+print(variance)
+
+var reuslt=im.addBands([estimate.where(im,im).rename('estimate'),variance.where(im,0).rename('variance')]);
+
+reuslt=reuslt.reproject(someData.projection())
+
+Map.addLayer(reuslt.select('estimate'),{min:1, max:73})
+Map.addLayer(reuslt.select('variance'),{min:0, max:2})
+
+
+//Map.addLayer(result.reproject(Simard.projection()),{min:1, max:73})
+
+var halfSize=10;
+var numberOfElement=(halfSize*2+1)*(halfSize*2+1);
+var kernel=ee.Kernel.square(halfSize)
+  
+var mask=im.mask().neighborhoodToArray({kernel:kernel, defaultValue:0});
+var r=im.unmask(0).neighborhoodToArray({kernel:kernel, defaultValue:0}).subtract(im).pow(2);
+
+print(r)
+print(im)
+
+var val=ee.Dictionary(r.reduceRegion({reducer:ee.Reducer.toList(), geometry:geometry, crs:r.projection()}));
+
+var sumVal=ee.Array.cat(ee.List(val.get(val.keys().get(0))),2).reduce(ee.Reducer.sum(),[2]);
+val=ee.Dictionary(mask.reduceRegion({reducer:ee.Reducer.toList(), geometry:geometry, crs:mask.projection()}));
+var sumMask=ee.Array.cat(ee.List(val.get(val.keys().get(0))),2).reduce(ee.Reducer.sum(),[2]);
+
+/*
+var covariance2D=sumVal.divide(sumMask);
+print(covariance2D)
+print(ui.Thumbnail(ee.Image.constant(covariance2D)))
+*/
+
+var X=ee.Array(ee.List.sequence(-halfSize,halfSize,1)).repeat(1, halfSize*2+1)//.reshape([-1]);
+var Y=ee.Array(ee.List.sequence(-halfSize,halfSize,1)).repeat(1, halfSize*2+1).transpose()//.reshape([-1]);
+var dist=ee.Array.cat([X,Y], 2).pow(2).reduce(ee.Reducer.sum(), [2]).sqrt();
+
+var ftC=ee.FeatureCollection(ee.Array.cat([sumVal,sumMask,dist],3).reshape([-1,3]).sort(dist.reshape([-1,1])).toList().map(function(val){
+  return ee.Feature(null,ee.Dictionary.fromLists(['var','amount','distance'],ee.List(val)));
+}));
+
+var variogram=ee.Join.saveAll('sameDistance').apply(ftC.distinct('distance'),ftC,ee.Filter.equals({leftField:'distance', rightField:'distance'}))
+.map(function(ft){
+  var col=ee.FeatureCollection(ee.List(ft.get('sameDistance')))
+  return ee.Feature(null,ee.Dictionary.fromLists(['ditance','var'],[ft.get('distance'),col.aggregate_sum('var').divide(col.aggregate_sum('amount'))]));
+})
+
+print(variogram.first())
+
+print(ui.Chart.feature.byFeature(variogram, 'ditance', 'var'))
