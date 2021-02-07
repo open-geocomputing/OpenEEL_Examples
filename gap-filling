@@ -27,9 +27,8 @@ image:im
 
 // OR
 
-var interpolated=oeel.Image.inverseDistanceInterpolation({
+var interpolated2=oeel.Image.inverseDistanceInterpolation({
 radius:10,
 power:2,
 useConvolution:true,
-image:im
-});
+})(im);
