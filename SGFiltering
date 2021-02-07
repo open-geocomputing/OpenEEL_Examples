@@ -1,0 +1,33 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var pt = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
+    pt2 = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
+    pt3 = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var pt = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
+    modis = ee.ImageCollection("MODIS/006/MOD09GA");
+
+var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL');
+print(oeel)
+
+// only 2020
+modis=modis.filterDate('2020-01-01','2021-01-01');
+print(modis.first())
+print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
+// remove cloud
+modis=modis.map(function(im){return im.updateMask(im.select('state_1km').bitwiseAnd(3).not());})
+print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
+
+// interpolate between data and smooth out
+modis=oeel.ImageCollection.SavatskyGolayFilter(modis,
+        ee.Filter.maxDifference(1000*3600*24*15, 'system:time_start', null, 'system:time_start'),
+        function(infromedImage,estimationImage){return ee.Image.constant(ee.Number(infromedImage.get('system:time_start')).subtract(ee.Number(estimationImage.get('system:time_start'))));},
+        5,['sur_refl_b.*']);
+        
+print(ui.Chart.image.series(modis.select('d_0_sur_ref.*'), pt, ee.Reducer.mean(), 1000));
+
+print('list of functions used',oeel.refs()) // with only SavatskyGolayFilter
+
+//use an other function 
+oeel.example({val:10})
+
+print('list of functions used',oeel.refs()) // with SavatskyGolayFilter and example
