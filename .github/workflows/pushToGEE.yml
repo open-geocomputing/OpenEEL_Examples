@@ -28,7 +28,7 @@ jobs:
           git config user.email "githubActionAutoMerge@no-one.com"
           git config user.name "githubActionAutoMerge"
           git config pull.rebase false
-      name: mirror the git
+      - name: mirror the git
         env:
           GEE_REPO_ADDRESS: ${{secrets.GEE_REPO_ADDRESS}}
         run: |
@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 15.x
-      - run: npm install puppeteer async fs imgbb-uploader https
+      - run: npm install puppeteer async fs imgbb-uploader
       - name : genrate the jsonfile
         env:
           IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
