@@ -19,6 +19,8 @@ var im=someData.selfMask().rename('test');
 var col=ee.ImageCollection([im]);
 Map.addLayer(im,{min:1, max:73},'gap with data',false)
 
+/*************  interp inv  *****************/
+
 var interpolated=oeel.Image.inverseDistanceInterpolation({
 radius:10,
 power:2,
@@ -38,3 +40,27 @@ Map.addLayer(interpolated2,{min:1, max:73},'inverse interp function call',false)
 
 var interpCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true));
 Map.addLayer(interpCol,{min:1, max:73},'inverse interp collection',false)
+
+
+
+/*************  Kriging  *****************/
+
+var krig1=oeel.Image.inverseDistanceInterpolation({
+radius:10,
+power:2,
+useConvolution:true,
+image:im
+});
+Map.addLayer(krig1,{min:1, max:73},'inverse interp driect',false)
+// OR
+
+var krig2=oeel.Image.inverseDistanceInterpolation({
+radius:10,
+power:2,
+useConvolution:true,
+})(im);
+Map.addLayer(krig2,{min:1, max:73},'inverse interp function call',false)
+// fro an image collection
+
+var krigCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true));
+Map.addLayer(krigCol,{min:1, max:73},'inverse interp collection',false)
