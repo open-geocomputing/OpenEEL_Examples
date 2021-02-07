@@ -9,10 +9,7 @@ modis=modis.filterDate('2020-01-01','2021-01-01');
 print(modis.first())
 
 
-modis.map(oeel.Algorithms.MODIS.terrainShadow({
-modisImage:,
-// kernelHalfSize:10
-});
+modis=modis.map(oeel.Algorithms.MODIS.terrainShadow());
 
 
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
