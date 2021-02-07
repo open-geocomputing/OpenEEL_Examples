@@ -21,8 +21,3 @@ modis=oeel.ImageCollection.SavatskyGolayFilter(modis,
 print(ui.Chart.image.series(modis.select('d_0_sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
 print('list of functions used',oeel.refs()) // with only SavatskyGolayFilter
-
-//use an other function 
-oeel.example({val:10})
-
-print('list of functions used',oeel.refs()) // with SavatskyGolayFilter and example
