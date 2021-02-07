@@ -1,8 +1,9 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var srtm = ee.Image("CGIAR/SRTM90_V4");
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
-var pt = ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
+var srtm = ee.Image("CGIAR/SRTM90_V4"),
+    pt = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
     modis = ee.ImageCollection("MODIS/006/MOD09GA");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+
 
 var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL');
 print(oeel)
@@ -16,7 +17,8 @@ print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 10
 modis=modis.map(function(im){return im.updateMask(im.select('state_1km').bitwiseAnd(3).not());})
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 modis=modis.map(oeel.Algorithms.MODIS.terrainShadow({dem:srtm}))
-      .map(function(im){return im.updateMask(im.select('shadowMask'));});
+      .map(function(im){return im.updateMask(im.select('shadowMask').not());});
+      
 print(modis.first())
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
