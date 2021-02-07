@@ -8,7 +8,7 @@ var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL');
 print(oeel)
 
 // only 2020
-modis=modis.filterDate('2020-12-01','2021-01-01');
+modis=modis.filterDate('2020-10-01','2021-01-01');
 print(modis.first())
 
 
