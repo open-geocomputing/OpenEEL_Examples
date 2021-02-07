@@ -1,0 +1,38 @@
+name: sync with GEEx
+
+on:
+  # push:
+  #   branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  buildAndMirrror:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: grant access
+        env:
+          GIT_COOKIE_VALUE: ${{ secrets.GIT_COOKIE_VALUE }}
+        run: |
+          touch ~/.gitcookies
+          chmod 0600 ~/.gitcookies
+          echo earthengine.googlesource.com,FALSE,/,TRUE,2147483647,o,${GIT_COOKIE_VALUE} | tr  , \\t >>~/.gitcookies
+      - name: config git
+        run: |
+          git config http.cookiefile ~/.gitcookies
+          git config http.postBuffer 157286400
+          git config user.email "githubActionAutoMerge@no-one.com"
+          git config user.name "githubActionAutoMerge"
+          git config pull.rebase false 
+
+      - name: mirror the git
+        env:
+          GEE_REPO_ADDRESS: ${{secrets.GEE_REPO_ADDRESS}}
+        run: |
+          git pull https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master --allow-unrelated-histories || bash -c "git checkout --ours . ; git add -u ; git commit -m 'autoMerge'"
+          git push https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master
+          git push
