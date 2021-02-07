@@ -20,7 +20,6 @@ var col=ee.ImageCollection([im]);
 Map.addLayer(im,{min:1, max:73},'gap with data',false)
 
 /*************  interp inv  *****************/
-
 var interpolated=oeel.Image.inverseDistanceInterpolation({
 radius:10,
 power:2,
@@ -43,10 +42,7 @@ Map.addLayer(interpolated2,{min:1, max:73},'inverse interp function call',false)
 var interpCol=col.map(interffunc);
 Map.addLayer(interpCol,{min:1, max:73},'inverse interp collection',false);
 
-
-
 /*************  Kriging  *****************/
-
 var krig1=oeel.Image.kriging({
 covFun:function(dist){return dist.multiply(-0.1).exp().multiply(140);}, // expodential covariance
 image:im
