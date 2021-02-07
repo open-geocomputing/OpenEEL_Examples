@@ -40,7 +40,7 @@ var interpolated2=interffunc(im)
 Map.addLayer(interpolated2,{min:1, max:73},'inverse interp function call',false);
 
 // for an image collection
-var interpCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true));
+var interpCol=col.map(interffunc);
 Map.addLayer(interpCol,{min:1, max:73},'inverse interp collection',false);
 
 
