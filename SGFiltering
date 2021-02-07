@@ -1,8 +1,5 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var pt = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
     modis = ee.ImageCollection("MODIS/006/MOD09GA");
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
-
 
 var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL');
 print(oeel)
