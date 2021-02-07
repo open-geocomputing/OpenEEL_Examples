@@ -1,0 +1,24 @@
+{
+    "OpenEEL.Algorithms.MODIS.terrainShadow": [
+        "MODISFiltering"
+    ],
+    "OpenEEL.ImageCollection.SavatskyGolayFilter": [
+        "MODISFiltering"
+    ],
+    "OpenEEL.Export.ImageCollection.asImageToAsset": [
+        "exportImageCollection"
+    ],
+    "OpenEEL.Export.ImageCollection.toAsset": [
+        "exportImageCollection"
+    ],
+    "OpenEEL.Image.inverseDistanceInterpolation": [
+        "gap-filling"
+    ],
+    "OpenEEL.Image.kriging": [
+        "gap-filling",
+        "kriging"
+    ],
+    "OpenEEL.Image.semivariogram": [
+        "kriging"
+    ]
+}

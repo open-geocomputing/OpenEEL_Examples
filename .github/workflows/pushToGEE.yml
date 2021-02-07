@@ -27,12 +27,35 @@ jobs:
           git config http.postBuffer 157286400
           git config user.email "githubActionAutoMerge@no-one.com"
           git config user.name "githubActionAutoMerge"
-          git config pull.rebase false 
+          git config pull.rebase false
+      name: mirror the git
+        env:
+          GEE_REPO_ADDRESS: ${{secrets.GEE_REPO_ADDRESS}}
+        run: |
+          git pull https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master --allow-unrelated-histories || bash -c "git checkout --ours . ; git add -u ; git commit -m 'autoMerge'"
+          git push https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master
+          git push
+
+      - name: load node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 15.x
+      - run: npm install puppeteer async fs imgbb-uploader https
+      - name : genrate the jsonfile
+        env:
+          IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+          REPO_NAME: ${{ secrets.GEE_REPO_ADDRESS }}
+          SACSID_KEY: ${{ secrets.SACSID_KEY }}
+        run: node doc/generateFunctionPerExample.js
+      - name: create openEEL
+        run: |
+          git add doc/functionPerExample.json
+          git commit -m 'update functionPerExample.json'
+          git push
 
       - name: mirror the git
         env:
           GEE_REPO_ADDRESS: ${{secrets.GEE_REPO_ADDRESS}}
         run: |
-          git pull https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master --allow-unrelated-histories || bash -c "git checkout --ours . ; git add -u ; git commit -m 'autoMerge'"
           git push https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master
           git push
