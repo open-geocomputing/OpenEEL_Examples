@@ -18,6 +18,7 @@ print(modis.first())
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 // remove cloud
 modis=modis.map(function(im){return im.updateMask(im.select('state_1km').bitwiseAnd(3).not());})
+print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 modis=modis.map(oeel.Algorithms.MODIS.terrainShadow({dem:srtm}))
       .map(function(im){return im.updateMask(im.select('shadowMask'));});
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
