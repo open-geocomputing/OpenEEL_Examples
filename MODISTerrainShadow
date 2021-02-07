@@ -1,4 +1,0 @@
-oeel.Algorithms.MODIS.terrainShadow({
-modisImage:,
-// kernelHalfSize:10
-});
