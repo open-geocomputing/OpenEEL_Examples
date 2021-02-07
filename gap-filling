@@ -15,5 +15,21 @@ var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 // options to gap-fill a raster (single band, single image)
 var im=someData.selfMask().rename('test');
+var col=ee.ImageCollection([im]);
 Map.addLayer(im,{min:1, max:73},'gap with data',false)
 
+var interpolated=oeel.Image.inverseDistanceInterpolation({
+radius:10,
+power:2,
+useConvolution:true,
+image:im
+});
+
+// OR
+
+var interpolated=oeel.Image.inverseDistanceInterpolation({
+radius:10,
+power:2,
+useConvolution:true,
+image:im
+});
