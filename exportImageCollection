@@ -1,2 +1,20 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var S2 = ee.ImageCollection("COPERNICUS/S2");
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
 var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL');
 
+
+S2=S2.limit(3);
+oeel.Export.ImageCollection.asImageToAsset({
+imageCollection:S2,
+description:'SingleImageExport',
+assetId:'ExportImageCollectionToSingleImage',
+});
+
+
+oeel.Export.ImageCollection.toAsset({
+imageCollection:S2,
+nameProperty:'system:index',
+description:'ExportImageCollection',
+assetId:'OEEL_exportCollection',
+});
