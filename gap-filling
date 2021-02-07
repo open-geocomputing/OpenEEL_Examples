@@ -58,7 +58,7 @@ covFun:function(dist){return dist.multiply(-0.1).exp().multiply(140);}, // expod
 Map.addLayer(krig2,{min:1, max:73},'kriging function call',false);
 // fro an image collection
 
-var krigCol=col.map(oeel.Image.kriging(function(dist){return dist.multiply(-0.1).exp().multiply(140);}));
+var krigCol=col.map(oeel.Image.kriging({covFun:function(dist){return dist.multiply(-0.1).exp().multiply(140);}}));
 Map.addLayer(krigCol,{min:1, max:73},'kriging collection',false);
 
 print('list of functions used',oeel.refs())
