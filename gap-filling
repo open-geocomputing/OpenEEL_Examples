@@ -52,7 +52,7 @@ image:im
 Map.addLayer(krig1,{min:1, max:73},'kriging driect',false)
 // OR
 
-var krig2=ooeel.Image.kriging({
+var krig2=oeel.Image.kriging({
 covFun:function(dist){return dist.multiply(-0.1).exp().multiply(140);}, // expodential covariance
 })(im);
 Map.addLayer(krig2,{min:1, max:73},'kriging function call',false)
