@@ -24,7 +24,7 @@ power:2,
 useConvolution:true,
 image:im
 });
-
+Map.addLayer(interpolated,{min:1, max:73},'inverse interp driect',false)
 // OR
 
 var interpolated2=oeel.Image.inverseDistanceInterpolation({
@@ -32,7 +32,8 @@ radius:10,
 power:2,
 useConvolution:true,
 })(im);
-
+Map.addLayer(interpolated2,{min:1, max:73},'inverse interp function call',false)
 // fro an image collection
 
 var interpCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true));
+Map.addLayer(interpCol,{min:1, max:73},'inverse interp collection',false)
