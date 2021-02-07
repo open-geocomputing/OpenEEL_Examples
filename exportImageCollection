@@ -18,3 +18,5 @@ oeel.Export.ImageCollection.toAsset({
   description:'ExportImageCollection',
   assetId:'OEEL_exportCollection',
 });
+
+print('list of functions used',oeel.refs())
