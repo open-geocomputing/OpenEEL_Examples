@@ -9,7 +9,7 @@ modis=modis.filterDate('2020-01-01','2021-01-01');
 print(modis.first())
 
 
-oeel.Algorithms.MODIS.terrainShadow({
+modis.map(oeel.Algorithms.MODIS.terrainShadow({
 modisImage:,
 // kernelHalfSize:10
 });
