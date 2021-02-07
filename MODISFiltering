@@ -12,7 +12,8 @@ modis=modis.filterDate('2020-10-01','2021-01-01');
 print(modis.first())
 
 
-modis=modis.map(oeel.Algorithms.MODIS.terrainShadow({dem:srtm})).map(function(im){return im.updateMask(im.select('shadowMask'))});
+modis=modis.map(oeel.Algorithms.MODIS.terrainShadow({dem:srtm}))
+      .map(function(im){return im.updateMask(im.select('shadowMask'));});
 print(modis.first())
 
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
@@ -27,6 +28,8 @@ modis=oeel.ImageCollection.SavatskyGolayFilter(modis,
           return ee.Image.constant(ee.Number(infromedImage.get('system:time_start'))
             .subtract(ee.Number(estimationImage.get('system:time_start'))));},
         5,['sur_refl_b.*']);
+        
+print(modis)
         
 print('Smoothed data',ui.Chart.image.series(modis.select('d_0_sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
