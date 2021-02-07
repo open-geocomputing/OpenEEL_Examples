@@ -1,5 +1,5 @@
 /**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var Simard = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
+var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
     geometry = 
     /* color: #d63000 */
     /* displayProperties: [
@@ -14,7 +14,7 @@ var Simard = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
           [10.649115538522569, 46.32247581051842]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
 //two options to gap-fill a global raster (single band, single date)
-var im=Simard.selfMask().rename('test');
+var im=someData.selfMask().rename('test');
 Map.addLayer(im,{min:1, max:73},'Simard',false)
 
 var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL')
