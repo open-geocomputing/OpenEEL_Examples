@@ -35,4 +35,4 @@ useConvolution:true,
 
 // fro an image collection
 
-var interpCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true,))
+var interpCol=col.map(oeel.Image.inverseDistanceInterpolation(10,2,true));
