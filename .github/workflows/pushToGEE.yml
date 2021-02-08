@@ -49,7 +49,7 @@ jobs:
         run: node doc/generateFunctionPerExample.js
       - name: commit functionPerExample.JSON
         run: |
-          git add doc/functionPerExample.json
+          git add -f doc/functionPerExample.json
           git commit -m 'update functionPerExample.json'
           git push
 
