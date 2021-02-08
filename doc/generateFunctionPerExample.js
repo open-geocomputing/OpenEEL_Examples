@@ -151,6 +151,7 @@ function getInfo(exampleName){
           })
       })
       Object.keys(listVal).map( function(key){listVal[key]=Array.from(listVal[key])});
+      listVal.timeSinceEpoch=Date.now();
       var outputFilename = 'doc/functionPerExample.json';
       fs.writeFile(outputFilename, JSON.stringify(listVal, null, 4), function(err) {
         if(err) {
