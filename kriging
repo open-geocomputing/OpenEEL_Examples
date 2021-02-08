@@ -17,7 +17,7 @@ var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
 var im=someData.selfMask().rename('test');
 Map.addLayer(im,{min:1, max:73},'Simard',false)
 
-var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL')
+var oeel=require('users/OEEL/lib:loadAll')
 
 var variogram=oeel.Image.semivariogram(im,geometry);
 

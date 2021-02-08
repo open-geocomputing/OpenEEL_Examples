@@ -13,7 +13,7 @@ var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
           [10.649115538522569, 45.90741349621637],
           [10.649115538522569, 46.32247581051842]]], null, false);
 /***** End of imports. If edited, may not auto-convert in the playground. *****/
-var oeel=require('users/gravey_mathieu/testlibGithub_v2:openEEL')
+var oeel=require('users/OEEL/lib:loadAll')
 // options to gap-fill a raster (single band, single image)
 var im=someData.selfMask().rename('test');
 var col=ee.ImageCollection([im]);

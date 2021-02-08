@@ -3,7 +3,7 @@ const async = require('async');
 const fs = require('fs');
 const imgbbUploader = require("imgbb-uploader");
 
-const imgbb_API_KEY=process.env.IMGBB_API_KEY;//'f9713daf15ba30609b11ec36e50ff5e5';
+const imgbb_API_KEY=process.env.IMGBB_API_KEY;
 const repoName=process.env.REPO_NAME;
 const SACSID_KEY=process.env.SACSID_KEY;
 
