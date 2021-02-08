@@ -35,7 +35,7 @@ jobs:
           git pull https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master --allow-unrelated-histories || bash -c "git checkout --ours . ; git add -u ; git commit -m 'autoMerge'"
           git push https://earthengine.googlesource.com/${GEE_REPO_ADDRESS} master
           git push
-
+      - run: sudo apt install chromium-browser
       - name: load node
         uses: actions/setup-node@v2
         with:
@@ -47,7 +47,7 @@ jobs:
           REPO_NAME: ${{ secrets.GEE_REPO_ADDRESS }}
           SACSID_KEY: ${{ secrets.SACSID_KEY }}
         run: node doc/generateFunctionPerExample.js
-      - name: create openEEL
+      - name: commit functionPerExample.JSON
         run: |
           git add doc/functionPerExample.json
           git commit -m 'update functionPerExample.json'

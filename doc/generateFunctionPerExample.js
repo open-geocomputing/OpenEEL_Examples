@@ -8,7 +8,7 @@ const repoName=process.env.REPO_NAME;
 const SACSID_KEY=process.env.SACSID_KEY;
 
 fs.readdir('.',{withFileTypes:true},function (err, files){
-  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name));
+  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name).filter(x => !x.match('json')));
 })
 
 withScreenshot=true;
