@@ -136,10 +136,10 @@ function getInfo(exampleName){
   //result=new Array(listExample.length);
   async function functionCallEachEaxample(listExample){
     console.log(listExample)
-    browser = await puppeteer.launch({ defaultViewport: {width: 1920, height: 1080} });//{headless: false}
-    async.parallelLimit(listExample.map(getInfo),4,function(err, results) {
+    browser = await puppeteer.launch({ defaultViewport: {width: 1920, height: 2400},headless: true });//{headless: false}
+    async.parallelLimit(listExample.map(getInfo),2,function(err, results) {
       console.log(results);
-      listVal={};
+      var listVal={};
       results.forEach(
         function(x){x.functions.forEach(
           function(y){
