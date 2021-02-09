@@ -12,7 +12,7 @@ fs.readdir('.',{withFileTypes:true},function (err, files){
 })
 
 withScreenshot=true;
-TO=240*1000;
+TO=360*1000;
 
 function getInfo(exampleName){
   return (async()=>{
@@ -137,7 +137,7 @@ function getInfo(exampleName){
   async function functionCallEachEaxample(listExample){
     console.log(listExample)
     browser = await puppeteer.launch({ defaultViewport: {width: 1920, height: 2400},headless: true });//{headless: false}
-    async.parallelLimit(listExample.map(getInfo),2,function(err, results) {
+    async.parallelLimit(listExample.map(getInfo),1,function(err, results) {
       console.log(results);
       var listVal={};
       results.forEach(
