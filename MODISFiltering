@@ -1,25 +1,22 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
 var srtm = ee.Image("CGIAR/SRTM90_V4"),
     pt = /* color: #d63000 */ee.Geometry.Point([-94.05706782341004, 43.65432823960525]),
     modis = ee.ImageCollection("MODIS/006/MOD09GA");
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
 
+var oeel=require('users/OEEL/lib:loadAll');
 
-var oeel=require('users/OEEL/lib:loadAll')
-print(oeel)
 
 // only 2020
 modis=modis.filterDate('2020-10-01','2021-01-01');
-print(modis.first())
+print(modis.first());
 
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 // remove cloud
-modis=modis.map(function(im){return im.updateMask(im.select('state_1km').bitwiseAnd(3).not());})
+modis=modis.map(function(im){return im.updateMask(im.select('state_1km').bitwiseAnd(3).not());});
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 modis=modis.map(oeel.Algorithms.MODIS.terrainShadow({dem:srtm}))
       .map(function(im){return im.updateMask(im.select('shadowMask').not());});
       
-print(modis.first())
+print(modis.first());
 print(ui.Chart.image.series(modis.select('sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
 // interpolate between data and smooth out
@@ -30,10 +27,10 @@ modis=oeel.ImageCollection.SavatskyGolayFilter(modis,
             .subtract(ee.Number(estimationImage.get('system:time_start'))));},
         5,['sur_refl_b.*']);
         
-print(modis)
+print(modis);
         
 print('Smoothed data',ui.Chart.image.series(modis.select('d_0_sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
 print('Smoothed derivate',ui.Chart.image.series(modis.select('d_1_sur_ref.*'), pt, ee.Reducer.mean(), 1000));
 
-print('list of functions used',oeel.refs())
+print('list of functions used',oeel.refs());

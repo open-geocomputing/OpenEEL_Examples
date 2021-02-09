@@ -1,10 +1,12 @@
+Map.centerObject(ee.Geometry.Point([-100.00113818791975, 43.694497759501594]),8);
+
 var oeel=require('users/OEEL/lib:loadAll');
 
 var S1=ee.ImageCollection("COPERNICUS/S1_GRD");
-var geometry = Map.getBounds(true)
+var geometry = Map.getBounds(true);
 S1=S1.filterBounds(geometry).filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH')).limit(300);
 
-print(S1.first())
+print(S1.first());
 
 var functionToRemobeBorder=oeel.Algorithms.Sentinel1.removeS1BlackBorders(-25);
 
@@ -12,4 +14,4 @@ Map.addLayer(functionToRemobeBorder(S1.filterBounds(Map.getCenter()).first()).se
 
 Map.addLayer(S1.map(functionToRemobeBorder).median().select('VH'),{min:-30, max:10});
 
-print('list of functions used',oeel.refs())
+print('list of functions used',oeel.refs());

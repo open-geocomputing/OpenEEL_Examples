@@ -1,18 +1,7 @@
-/**** Start of imports. If edited, may not auto-convert in the playground. ****/
-var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005"),
-    geometry = 
-    /* color: #d63000 */
-    /* displayProperties: [
-      {
-        "type": "rectangle"
-      }
-    ] */
-    ee.Geometry.Polygon(
-        [[[9.852606749460069, 46.32247581051842],
-          [9.852606749460069, 45.90741349621637],
-          [10.649115538522569, 45.90741349621637],
-          [10.649115538522569, 46.32247581051842]]], null, false);
-/***** End of imports. If edited, may not auto-convert in the playground. *****/
+var someData = ee.Image("NASA/JPL/global_forest_canopy_height_2005");
+var geometry = ee.Geometry.Point([10.44104168672001, 45.596877548727065]);
+
+Map.centerObject(geometry,10)
 var oeel=require('users/OEEL/lib:loadAll')
 // options to gap-fill a raster (single band, single image)
 var im=someData.selfMask().rename('test');
