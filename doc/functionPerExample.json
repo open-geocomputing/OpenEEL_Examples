@@ -5,6 +5,9 @@
     "OpenEEL.ImageCollection.SavatskyGolayFilter": [
         "MODISFiltering"
     ],
+    "OpenEEL.Algorithms.Sentinel1.removeS1BlackBorders": [
+        "cleanS1"
+    ],
     "OpenEEL.Export.ImageCollection.asImageToAsset": [
         "exportImageCollection"
     ],
@@ -21,5 +24,5 @@
     "OpenEEL.Image.semivariogram": [
         "kriging"
     ],
-    "timeSinceEpoch": 1612776608698
+    "timeSinceEpoch": 1612874888343
 }
