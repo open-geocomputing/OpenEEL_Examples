@@ -11,3 +11,5 @@ var functionToRemobeBorder=oeel.Algorithms.Sentinel1.removeS1BlackBorders(-25);
 Map.addLayer(functionToRemobeBorder(S1.filterBounds(Map.getCenter()).first()).select('VH'),{min:-30, max:10});
 
 Map.addLayer(S1.map(functionToRemobeBorder).median().select('VH'),{min:-30, max:10});
+
+print('list of functions used',oeel.refs())
