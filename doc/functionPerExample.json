@@ -5,6 +5,12 @@
     "OpenEEL.ImageCollection.SavatskyGolayFilter": [
         "MODISFiltering"
     ],
+    "OpenEEL.ImageCollection.OtsuThreshold": [
+        "OstuMODIS"
+    ],
+    "OpenEEL.Algorithms.Sentinel2.cloudfree": [
+        "S2Cloudfree"
+    ],
     "OpenEEL.Algorithms.Sentinel1.removeS1BlackBorders": [
         "cleanS1"
     ],
@@ -24,5 +30,5 @@
     "OpenEEL.Image.semivariogram": [
         "kriging"
     ],
-    "timeSinceEpoch": 1612874888343
+    "timeSinceEpoch": 1612968182944
 }
