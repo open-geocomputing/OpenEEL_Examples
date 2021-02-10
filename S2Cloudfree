@@ -1,0 +1,7 @@
+var oeel=require('users/OEEL/lib:loadAll');
+Map.centerObject(ee.Geometry.Point([-0.2988129359949543, 42.759976124941396]),10)
+var S2Cloudfree=oeel.Algorithms.Sentinel2.cloudfree()
+
+Map.addLayer(S2Cloudfree.filterBounds(Map.getBounds(true)).filter(ee.Filter.calendarRange(170, 220)).median(),{bands:['B4','B3','B2'],min:0, max:3000})
+
+print('list of functions used',oeel.refs())
