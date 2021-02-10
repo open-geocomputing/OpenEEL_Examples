@@ -1,0 +1,33 @@
+var geometry = ee.Geometry.Point([-114.25034538171685, 50.91587090557124]);
+
+// can be changed
+var otsuMode='sequence'; //'sequence'
+
+var oeel=require('users/OEEL/lib:loadAll')
+
+var modis=ee.ImageCollection("MODIS/006/MOD09GQ").filterDate('2018-01-01','2021-01-01')
+var ndvi=modis.map(function(im){return im.addBands(im.normalizedDifference(['sur_refl_b02','sur_refl_b01']))});
+
+var otsuTh=oeel.ImageCollection.OtsuThreshold(ndvi,'nd',otsuMode)
+var otsuThCol=oeel.ImageCollection.OtsuThreshold({imageCollection:ndvi, selectBand:'nd', mode:otsuMode, getCoefCollection:true});
+
+var ftC=ee.FeatureCollection(ndvi.map(function(im){return ee.Feature(null,im.reduceRegion(ee.Reducer.mean(), geometry, 250))}))//.filter(ee.Filter.notNull(['nd']));
+print(ui.Chart.feature.histogram(ftC, 'nd'))
+
+
+var ftCol=otsuThCol.map(function(im){return ee.Feature(null,im.reduceRegion(ee.Reducer.mean(), geometry, 250))});
+
+print(ui.Chart.feature.byFeature(ftCol, 'threshold','score').setChartType('ScatterChart'))
+
+var localTh=ee.Number(otsuTh.reduceRegion(ee.Reducer.mean(), geometry, 250).get('threshold'));
+
+
+var hist=ee.FeatureCollection(ee.Array(ftC.reduceColumns(ee.Reducer.autoHistogram(),['nd']).get('histogram')).toList().map(function(li){ li=ee.List(li);
+  return ee.Feature(null,ee.Dictionary.fromLists(['nd','amount','aboveTh'],li.add(ee.Number(li.get(0)).gt(localTh))))}));
+
+print(ui.Chart.feature.groups(hist,'nd', 'amount', 'aboveTh').setChartType('ColumnChart'))
+
+
+Map.addLayer(otsuTh,{min:-1,max:1},'threshold',false)
+
+print('list of functions used',oeel.refs())
