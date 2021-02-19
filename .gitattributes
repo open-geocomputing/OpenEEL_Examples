@@ -1,0 +1,3 @@
+* linguist-language=JavaScript
+*.json linguist-language=JSON
+doc/functionPerExample.json linguist-generated
