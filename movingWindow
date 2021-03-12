@@ -1,0 +1,31 @@
+var oeel=require('users/OEEL/lib:loadAll')
+
+var geometry = ee.Geometry.Point([-93.3103515625, 47.3855738580943]);
+
+var col=ee.ImageCollection("MODIS/006/MOD09GA").filterDate('2012','2013');
+print(col);
+col=col.map(function(im){return im.addBands(im.normalizedDifference(['sur_refl_b02','sur_refl_b01']).rename('NDVI'))})
+print(ui.Chart.image.series(col.select('NDVI'), geometry, ee.Reducer.mean(), 500))
+// test your function 
+var newCol=oeel.ImageCollection.movingWindow(col,ee.Filter.maxDifference(1000*3600*24*5, 'system:time_start', null, 'system:time_start'));
+print(newCol);
+
+print(ui.Chart.image.series(newCol.select('NDVI_mean'), geometry, ee.Reducer.mean(), 500));
+
+// range NDVI
+var newCol2=oeel.ImageCollection.movingWindow(col,ee.Filter.maxDifference(1000*3600*24*10, 'system:time_start', null, 'system:time_start'),function(imCol){
+  return imCol.max().subtract(imCol.min());
+});
+print(newCol2);
+print(ui.Chart.image.series(newCol2.select('NDVI'), geometry, ee.Reducer.mean(), 500));
+
+// weighted averegae 
+var newCol3=oeel.ImageCollection.movingWindow(col,ee.Filter.maxDifference(1000*3600*24*10, 'system:time_start', null, 'system:time_start'),function(imCol){
+  var maxDist=ee.Number(imCol.aggregate_max('distanceError'));
+  return imCol.map(function(im){return im.multiply(maxDist.subtract(im.get('distanceError')))}).sum().
+    divide(imCol.aggregate_count('distanceError').multiply(maxDist).subtract(imCol.aggregate_sum('distanceError')));
+});
+print(newCol3);
+print(ui.Chart.image.series(newCol3.select('NDVI'), geometry, ee.Reducer.mean(), 500));
+
+print('list of functions used',oeel.refs())
