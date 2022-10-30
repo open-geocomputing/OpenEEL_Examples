@@ -1,0 +1,141 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var geometry = /* color: #d63000 */ee.Geometry.Polygon(
+        [[[-60.270601562500005, -1.4604924790211367],
+          [-60.270601562500005, -9.264255286247176],
+          [-50.338960937500005, -9.264255286247176],
+          [-50.338960937500005, -1.4604924790211367]]], null, false);
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+Map.setOptions('SATELLITE')
+var oeel=require('users/OEEL/lib:loadAll')
+
+var color= ['000000',
+  '05450a', '086a10', '54a708', '78d203', '009900', 'c6b044', 'dcd159',
+  'dade48', 'fbff13', 'b6ff05', '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c',
+  '69fff8', 'f9ffa4', '1c0dff'
+];
+
+var igbpLandCover = ee.ImageCollection('MODIS/006/MCD12Q1').select("LC_Type1").map(oeel.Element.addTimeProperties());
+var igbpLandCoverVis = {
+  min: 0.0,
+  max: 17.0,
+  palette:color,
+};
+  
+  
+function getPlot(igbpLandCover,step, geometry){
+  igbpLandCover=ee.ImageCollection(igbpLandCover).filter(ee.Filter.inList("oeel:start_year", ee.List.sequence(2000,2021,step)));
+  
+  var size=igbpLandCover.size();
+  var scale=500;
+  
+  var NoC=17;
+  
+  var reducer=ee.Reducer.fixed2DHistogram({
+    xMin:1,
+    xMax:NoC+1,
+    xSteps:NoC,
+    yMin:1,
+    yMax:NoC+1,
+    ySteps:NoC,
+  });
+  
+  function hist2DtoList(data,index,numberClass){
+    return ee.Array.cat([
+      ee.Array(data.get('histogram')),
+      ee.Array(data.get('xBuckets')).add(index.multiply(numberClass)).reshape([1,-1]).repeat(0,ee.Array(data.get('yBuckets')).toList().size()),
+      ee.Array(data.get('yBuckets')).add(index.add(1).multiply(numberClass)).repeat(1,ee.Array(data.get('xBuckets')).toList().size()),
+      ],
+      2).reshape([-1,3]);
+  }
+  
+  
+  var data=ee.List.sequence(0,size.subtract(2),1).map(function(index){
+    index=ee.Number(index);
+    return hist2DtoList(ee.Dictionary(igbpLandCover.toBands().select([index,index.add(1)]).reduceRegion(reducer,geometry,scale)),
+    index,NoC+1);
+  });
+  
+  data=ee.Array.cat(data,0).transpose();
+  
+  data=ee.Array.cat([data,data.slice(0,0,1).sqrt()],0);
+  data=data.toList();
+  
+  var colors=ee.List.repeat(color,size).flatten();
+  var labels=ee.List.repeat(igbpLandCover.aggregate_array("oeel:start_year"),NoC+1).unzip().flatten();
+  
+  var col=igbpLandCover.toList(size);
+  
+  // genration of custom plot
+  return {
+    type: "sankey",
+    orientation: "h",
+    node: {
+      pad: 10,
+      thickness: 25,
+      line: {
+        color: "black",
+        width: 0.1
+      },
+     label: labels,
+     color: colors
+        },
+  
+    link:ee.Dictionary.fromLists(["label","source", "target","value"], data)
+  };
+}
+
+var plot=oeel.plotly.plot();
+// add custom plot
+plot.addCustom(getPlot(igbpLandCover,1,geometry))
+
+plot.layout.autosize=true;
+
+Map.centerObject(geometry, 6);
+//empty layer, to be used in onclick
+var sourceMap=Map.addLayer(ee.Image(), igbpLandCoverVis, 'IGBP Land Cover source');
+var destMap=Map.addLayer(ee.Image(), igbpLandCoverVis, 'IGBP Land Cover dest');
+var maskMap=Map.addLayer(ee.Image(), {opacity:0.8}, 'mask');
+
+// on click on the plot
+plot.on('click',function(event){
+  var srcImage=igbpLandCover.filter(ee.Filter.eq('oeel:start_year',event.points[0].source.label)).first();
+  var dstImage=igbpLandCover.filter(ee.Filter.eq('oeel:start_year',event.points[0].target.label)).first();
+  var srcMak=srcImage.eq(color.indexOf(event.points[0].source.color));
+  var destMak=dstImage.eq(color.indexOf(event.points[0].target.color));
+  var mask=srcMak.and(destMak)
+  sourceMap.setEeObject(srcImage.updateMask(srcMak))
+  destMap.setEeObject(dstImage.updateMask(destMak))
+  maskMap.setEeObject(ee.ImageCollection([ee.Image.constant(0).eq(0),mask.eq(0)]).select([0],['mask']).mosaic().selfMask().not())
+})
+
+ui.root.insert(0,plot.widget({stretch:'horizontal',margin:0}))
+
+ui.root.setLayout(ui.Panel.Layout.flow('vertical'))
+
+var step=1;
+
+
+// add a slider 
+Map.add(ui.Slider({
+min:1,
+max:5,
+value:1,
+step:1,
+	onChange:function(val){
+    step=val;
+    plot.data=[getPlot(igbpLandCover,step,Map.drawingTools().toFeatureCollection('id').geometry(1000))];
+    plot.update()
+	},
+  direction:'vertical',
+	style:{position:'middle-right'},
+}))
+
+// get geoemtry change
+Map.drawingTools().onEdit(ui.util.throttle(function(){
+  plot.data=[getPlot(igbpLandCover,step,Map.drawingTools().toFeatureCollection('id').geometry(1000))];
+  plot.update()
+},1000))
+
+
+// print all OEEL function used
+print('list of functions used',oeel.refs());

@@ -1,0 +1,38 @@
+var geometry = ee.Geometry.Point([-103.81328125, 37.07682857623016]);
+
+var modis=ee.ImageCollection("MODIS/061/MOD09GA").filterDate("2020","2022").select(["sur_refl_b02","sur_refl_b03","sur_refl_b04","sur_refl_b05","sur_refl_b06"]);
+var oeel=require('users/OEEL/lib:loadAll');
+
+var data=modis.map(function(im){return im.set(im.divide(500).reduceRegion(ee.Reducer.first(),geometry,1000))});
+
+// test your function 
+var plot=oeel.plotly.scatter(data,"test",'sur_refl_b02','sur_refl_b03','sur_refl_b04','sur_refl_b05');
+
+// add a first annotation 
+plot.addAnnotations({text:"something interesthing?",x:10, y:10});
+
+// add a second annotation 
+plot.addAnnotations({text:"nothing interesthing?",x:16, y:3});
+
+plot.on('click',function(data, plot){
+  // get cliked points (it's a list so take teh first one)
+  var pt=data.points[0];
+  // add an annotation related to teh clicked point
+  plot.addAnnotations({text:"The color value is: "+pt['marker.color'],x:pt.x, y:pt.y});
+  // update all the chats 
+  plot.update();
+});
+// add teh chart in the console
+print(plot.widget());  //widget are dynamic
+
+// static chart 
+//print(plot.draw())
+
+//get a second dynamic chart for teh map
+var widget=plot.widget(); //widget are dynamic
+// set teh size of this chart
+widget.style().set('width','500px');
+// add it to the map
+Map.add(widget);
+
+print('list of functions used',oeel.refs());

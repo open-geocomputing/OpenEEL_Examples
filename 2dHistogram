@@ -1,0 +1,83 @@
+var geometry =  ee.Geometry.Polygon(
+        [[[-106.45, 39.38925299878769],
+          [-106.45, 34.54701381750327],
+          [-99.682421875, 34.54701381750327],
+          [-99.682421875, 39.38925299878769]]], null, false);
+
+var modis=ee.ImageCollection("MODIS/061/MOD09GA").first().select(["sur_refl_b02","sur_refl_b03","sur_refl_b04","sur_refl_b05","sur_refl_b06"]);
+var oeel=require('users/OEEL/lib:loadAll')
+
+
+var hist=modis.select([0,4]).reduceRegion({
+		reducer:ee.Reducer.fixed2DHistogram({
+			xMin:0,
+			xMax:10000,
+			xSteps:50,
+			yMin:0,
+			yMax:10000,
+			ySteps:50,
+	}),
+	geometry:geometry,
+	scale:1000,
+})
+
+//hist2D
+print(hist)
+
+
+//g enerate plot with data 
+var plot=oeel.plotly.hist2D(hist,"test")
+
+// set layout
+plot.setLayout({
+	title: 'NIR VS SW',
+	xaxis: {
+			title: 'Near-infrared'
+	},
+	yaxis: { 
+			title: 'Shortwave'
+	},
+})
+
+// display the chart in console
+print(plot.widget())
+
+//add interactivity 
+// .on(event, function) // all plotly intercation are supported
+plot.on('relayout',function(event){
+	print(event) // a nice way to explore information available 
+	if( event["xaxis.autorange"]){ //if xaxis on autorange, set to unzoomed
+			event["xaxis.range[0]"]=0 ;
+			event["xaxis.range[1]"]=10000;
+	}
+	if( event["yaxis.autorange"]){ //if xaxis on autorange, set to unzoomed
+			event["yaxis.range[0]"]=0 ;
+			event["yaxis.range[1]"]=10000;
+	}
+	if( event["xaxis.range[0]"]!==undefined &&
+			event["xaxis.range[1]"]!==undefined &&
+			event["yaxis.range[0]"]!==undefined && 
+			event["yaxis.range[1]"]!==undefined){ // if the even is "valide" 
+		plot.data=oeel.plotly.hist2D(modis.select([0,4]).reduceRegion({
+			reducer:ee.Reducer.fixed2DHistogram({
+				xMin:event["xaxis.range[0]"],
+				xMax:event["xaxis.range[1]"],
+				xSteps:50,
+				yMin:event["yaxis.range[0]"],
+				yMax:event["yaxis.range[1]"],
+				ySteps:50,
+			}),
+			geometry:geometry,
+			scale:1000,
+			//	crs:null,
+			//	crsTransform:null,
+			//	bestEffort:false,
+			//	maxPixels:10000000,
+			//	tileScale:true,
+			}),"test").data;
+		plot.update(); // update the chart
+	}
+})
+
+// print all OEEL function used
+print('list of functions used',oeel.refs());
