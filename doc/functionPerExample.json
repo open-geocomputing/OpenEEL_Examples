@@ -1,4 +1,17 @@
 {
+    "OpenEEL.plotly.hist2D": [
+        "2dHistogram"
+    ],
+    "OpenEEL.plotly.plot": [
+        "2dHistogram",
+        "customPlotly",
+        "plotlyScatterPlot"
+    ],
+    "OpenEEL.plotly.directDraw": [
+        "2dHistogram",
+        "customPlotly",
+        "plotlyScatterPlot"
+    ],
     "OpenEEL.Algorithms.MODIS.terrainShadow": [
         "MODISFiltering"
     ],
@@ -13,6 +26,9 @@
     ],
     "OpenEEL.Algorithms.Sentinel1.removeS1BlackBorders": [
         "cleanS1"
+    ],
+    "OpenEEL.Element.addTimeProperties": [
+        "customPlotly"
     ],
     "OpenEEL.Export.ImageCollection.asImageToAsset": [
         "exportImageCollection"
@@ -30,5 +46,11 @@
     "OpenEEL.Image.semivariogram": [
         "kriging"
     ],
-    "timeSinceEpoch": 1612968182944
+    "OpenEEL.ImageCollection.movingWindow": [
+        "movingWindow"
+    ],
+    "OpenEEL.plotly.scatter": [
+        "plotlyScatterPlot"
+    ],
+    "timeSinceEpoch": 1667222264352
 }

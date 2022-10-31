@@ -16,7 +16,7 @@ const email=process.env.GEE_EMAIL;
 const password=process.env.GEE_PWD;
 
 fs.readdir('.',{withFileTypes:true},function (err, files){
-  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name).filter(x => !x.match('json')).filter(x => !x.startsWith('.')));
+  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name).filter(x => !x.match('json')).filter(x => !x.match('sh')).filter(x => !x.startsWith('.')));
 })
 
 var headless=false;
