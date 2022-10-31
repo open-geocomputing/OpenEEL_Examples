@@ -47,7 +47,7 @@ jobs:
           REPO_NAME: ${{ secrets.GEE_REPO_ADDRESS }}
           GEE_EMAIL: ${{ secrets.GEE_EMAIL }}
           GEE_PWD: ${{ secrets.GEE_PWD }}
-        run: node doc/generateFunctionPerExample.js
+        run: xvfb-run node doc/generateFunctionPerExample.js
       - name: commit functionPerExample.JSON
         run: |
           git add -f doc/functionPerExample.json
