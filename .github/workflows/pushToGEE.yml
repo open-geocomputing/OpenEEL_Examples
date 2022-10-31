@@ -40,12 +40,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 15.x
-      - run: npm install puppeteer async fs imgbb-uploader
+      - run: npm install playwright playwright-extra puppeteer-extra-plugin-stealth async fs imgbb-uploader
       - name : genrate the jsonfile
         env:
           IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
           REPO_NAME: ${{ secrets.GEE_REPO_ADDRESS }}
-          SACSID_KEY: ${{ secrets.SACSID_KEY }}
+          GEE_EMAIL: ${{ secrets.GEE_EMAIL }}
+          GEE_PWD: ${{ secrets.GEE_PWD }}
         run: node doc/generateFunctionPerExample.js
       - name: commit functionPerExample.JSON
         run: |

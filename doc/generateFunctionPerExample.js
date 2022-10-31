@@ -1,17 +1,26 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright-extra')
 const async = require('async');
 const fs = require('fs');
 const imgbbUploader = require("imgbb-uploader");
 
+// Load the stealth plugin and use defaults (all tricks to hide playwright usage)
+// Note: playwright-extra is compatible with most puppeteer-extra plugins
+const stealth = require('puppeteer-extra-plugin-stealth')()
+
+// Add the plugin to playwright (any number of plugins can be added)
+chromium.use(stealth)
+
 const imgbb_API_KEY=process.env.IMGBB_API_KEY;
 const repoName=process.env.REPO_NAME;
-const SACSID_KEY=process.env.SACSID_KEY;
+const email=process.env.GEE_EMAIL;
+const password=process.env.GEE_PWD;
 
 fs.readdir('.',{withFileTypes:true},function (err, files){
-  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name).filter(x => !x.match('json')));
+  functionCallEachEaxample(files.filter(x => x.isFile()).map(x=>x.name).filter(x => !x.match('json')).filter(x => !x.startsWith('.')));
 })
 
-withScreenshot=true;
+var headless=false;
+withScreenshot=false;
 TO=360*1000;
 
 function getInfo(exampleName){
@@ -19,17 +28,7 @@ function getInfo(exampleName){
     var result={
       example:exampleName,
     };
-    const page = await browser.newPage();
-    await page.setCookie({
-      name:'SACSID',
-      value:SACSID_KEY,
-      domain:'code.earthengine.google.com',
-      path:'/',
-      httpOnly: true,
-      secure: true,
-      session: false,
-      priority: 'Medium'
-    });
+    const page = await context.newPage();
     try{
       await page.waitForTimeout(Math.random()*3000)
       await page.goto("https://code.earthengine.google.com/?scriptPath="+repoName+":"+exampleName);
@@ -63,20 +62,24 @@ function getInfo(exampleName){
         console.log(e);
       }
     }
-
+    //console.log("wait on run button");
     try{
+      await page.waitForSelector('.goog-button.run-button')
+      await page.waitForTimeout(10000);
       await page.click('.goog-button.run-button');
     }catch(e)
     {
       console.log('can not run the script');
       console.log(e);
     }
+
+    //console.log("wait on output")
     try{
       // wait that outputs are writen
       //await page.waitForNavigation({waitUntil: 'networkidle0',timeout:10000});
-      await page.waitForSelector('.console.init pre',{timeout:TO})
+      await page.waitForSelector('ee-console ee-console-log',{timeout:TO})
       // wait the end compuation
-      await page.waitForFunction(() => !document.querySelector(".console.init .loading"),{timeout:TO});
+      await page.waitForFunction(() => !document.querySelector("ee-console ee-console-log .loading"),{timeout:TO});
       await page.waitForTimeout(10000);
     }catch(e)
     {
@@ -88,7 +91,7 @@ function getInfo(exampleName){
     if(withScreenshot){
       try{
       // //save concole output
-      const element = await page.$('.console.init');
+      const element = await page.$('ee-console');
       //await element.screenshot({path: 'console_'+exampleName+'.png'});
       var base64_2 = await element.screenshot({ encoding: "base64" })
       }catch(e)
@@ -115,29 +118,89 @@ function getInfo(exampleName){
 
     try{
     // set all output in json mode
-      await page.$$eval('.json-switch', list => list.map((element) => { return element.click(); }));
-      //capture json value
-      var obj=await page.$$eval('.console.init pre', list =>
-        list.map((element) => {return element.innerHTML})
-        );
-      result.functions=JSON.parse(obj[obj.length-1].replace(/(<([^>]+)>)/gi, ""));
+      // await page.$$eval('.json-switch', list => list.map((element) => { return element.click(); }));
+      // //capture json value
+
+      // $('ee-console ee-console-log:last-child div:last-child pre').innerText
+      // var obj=await page.$$eval('.console.init pre', list =>
+      //   list.map((element) => {return element.innerHTML})
+      //   );
+      // result.functions=JSON.parse(obj[obj.length-1].replace(/(<([^>]+)>)/gi, ""));
+
+      await page.click('ee-console ee-console-log:last-child div:last-child .json-switch');
+      let obj=await page.$eval('ee-console ee-console-log:last-child div:last-child pre', e=>e.innerText);
+      result.functions=JSON.parse(obj);//.replace(/(<([^>]+)>)/gi, ""));
     }catch(e)
     {
       console.log('can not read JSON at end of the script');
       console.log(e);
     }
-
+    //console.log(result)
     await page.close();
     return result;
   })
 };
 
 
+
+async function loginGoogle(browser,headless){
+  const page=await browser.newPage();
+  //await page.goto("https://code.earthengine.google.com");
+
+  const navigationPromise = page.waitForNavigation()
+
+  await page.setExtraHTTPHeaders({
+      'accept-language': 'en-US,en;q=0.9,hy;q=0.8'
+  });
+  await page.setExtraHTTPHeaders({
+      'accept-language': 'en-US,en;q=0.9,hy;q=0.8'
+  });
+  await page.goto('https://code.earthengine.google.com/')
+
+  await navigationPromise
+
+
+  if(headless){
+
+    // add some magic
+
+  }else
+  {
+    await page.waitForSelector('input[type="email"]')
+    await page.click('input[type="email"]')
+
+    await navigationPromise
+
+    //TODO : change to your email 
+    await page.type('input[type="email"]', email)
+
+    await page.waitForSelector('#identifierNext')
+    await page.click('#identifierNext')
+
+    await page.waitForTimeout(1000);
+
+    await page.waitForSelector('input[type="password"]')
+    await page.click('input[type="password"]')
+    await page.waitForTimeout(1000);
+
+    //TODO : change to your password
+    await page.type('input[type="password"]', password)
+
+    await page.waitForSelector('#passwordNext')
+    await page.click('#passwordNext')
+    await navigationPromise
+    await page.waitForTimeout(1000);
+  }
+  
+}
+
   //result=new Array(listExample.length);
   async function functionCallEachEaxample(listExample){
     console.log(listExample)
-    browser = await puppeteer.launch({ defaultViewport: {width: 1920, height: 2400},headless: true });//{headless: false}
-    async.parallelLimit(listExample.map(getInfo),1,function(err, results) {
+    browser = await chromium.launch({ignoreDefaultArgs: ['--disable-component-extensions-with-background-pages'], defaultViewport: {width: 1920, height: 2400},headless: headless });//{headless: false}
+    context = await browser.newContext()
+    await loginGoogle(context,headless)
+    async.parallelLimit(listExample.map(getInfo),5,function(err, results) {
       console.log(results);
       var listVal={};
       results.forEach(
