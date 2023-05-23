@@ -1,0 +1,16 @@
+var oeel=require('users/OEEL/lib:loadAll');
+
+//Example for matrixUnit
+var i=1, j=4;
+var n=10, m=10;
+print(oeel.Array.matrixUnit(n, m, i, j));
+
+
+//Example for arrayMatrixUnit
+var N=ee.Image.constant(5);
+var M=ee.Image.constant(6);
+var I=ee.Image.constant(1);
+var J=ee.Image.constant(2);
+Map.addLayer(oeel.Image.arrayMatrixUnit(N, M, I, J));
+
+print('list of functions used',oeel.refs())
