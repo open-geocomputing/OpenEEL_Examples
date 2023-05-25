@@ -1,0 +1,15 @@
+var oeel=require('users/OEEL/lib:loadAll')
+
+var featCol = ee.FeatureCollection("WRI/GPPD/power_plants");
+featCol = featCol.filter(ee.Filter.lt('gwh_estimt', 30));
+featCol = featCol.filter(ee.Filter.lt('capacitymw', 30));
+
+var properties = ['gwh_estimt', 'capacitymw'];
+var legendNames = ['gwh_estimt', 'capacitymw'];
+var title = 'Histogram';
+var bargap = true;
+
+var plot = oeel.plotly.histogram(featCol, properties, legendNames, title, bargap);
+print(plot.widget());
+
+print('list of functions used',oeel.refs());
