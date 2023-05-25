@@ -46,11 +46,17 @@
     "OpenEEL.Image.semivariogram": [
         "kriging"
     ],
+    "OpenEEL.Array.matrixUnit": [
+        "matrixUnit"
+    ],
+    "OpenEEL.Image.arrayMatrixUnit": [
+        "matrixUnit"
+    ],
     "OpenEEL.ImageCollection.movingWindow": [
         "movingWindow"
     ],
     "OpenEEL.plotly.scatter": [
         "plotlyScatterPlot"
     ],
-    "timeSinceEpoch": 1667222264352
+    "timeSinceEpoch": 1684999557990
 }
