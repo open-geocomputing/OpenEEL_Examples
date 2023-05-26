@@ -1,0 +1,18 @@
+var oeel=require('users/OEEL/lib:loadAll')
+
+var featCol = ee.FeatureCollection("WRI/GPPD/power_plants");
+
+var featCol1 = featCol.filter(ee.Filter.eq('comm_year', 2000));
+var featCol2 = featCol.filter(ee.Filter.eq('comm_year', 2016));
+var featColArray = [featCol1, featCol2];
+
+var properties = ['fuel1','fuel1'];
+var legendNames = ['fuel_2000','fuel_2016'];
+var title = 'Fuel comparaison 2000 - 2016';
+var barmode = 'group';
+
+var plot = oeel.plotly.barChart(featColArray, properties, legendNames, title, barmode);
+
+print(plot.widget());
+
+print('list of functions used',oeel.refs());
