@@ -5,12 +5,11 @@ var featCol = ee.FeatureCollection("WRI/GPPD/power_plants");
 var featColSolar = featCol.filter(ee.Filter.eq('fuel1', 'Solar'));
 var featColSolar2011 = featColSolar.filter(ee.Filter.eq('comm_year', 2011));
 
-var values = [featColSolar2011.aggregate_histogram('country_lg').values()]
-var labels = [featColSolar2011.aggregate_histogram('country_lg').keys()];
+var property = 'country_lg';
 var title = 'Number of new solar installations per country in 2011';
 var propertyDescription = 'New solar installations';
 
-var plot = oeel.plotly.donutChart(values, labels, title, propertyDescription);
+var plot = oeel.plotly.donutChart(featColSolar2011, property, title, propertyDescription);
 print(plot.widget());
 
 print('list of functions used',oeel.refs());
