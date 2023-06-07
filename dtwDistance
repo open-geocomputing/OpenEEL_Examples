@@ -1,0 +1,10 @@
+var oeel=require('users/OEEL/lib:loadAll')
+
+var X = ee.Array([2, 6, 18, 46, 4, 9]);
+var Y = ee.Array([-22, 17, 1, 87, 14, 3, 11, 36]);
+
+var d = oeel.Array.dtwDistance(X, Y);
+print(d);
+
+// print all OEEL function used
+print('list of functions used',oeel.refs());
