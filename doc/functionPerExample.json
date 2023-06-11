@@ -4,12 +4,18 @@
     ],
     "OpenEEL.plotly.plot": [
         "2dHistogram",
+        "barChart",
         "customPlotly",
+        "donutChart",
+        "overlaidHistogram",
         "plotlyScatterPlot"
     ],
     "OpenEEL.plotly.directDraw": [
         "2dHistogram",
+        "barChart",
         "customPlotly",
+        "donutChart",
+        "overlaidHistogram",
         "plotlyScatterPlot"
     ],
     "OpenEEL.Algorithms.MODIS.terrainShadow": [
@@ -24,11 +30,24 @@
     "OpenEEL.Algorithms.Sentinel2.cloudfree": [
         "S2Cloudfree"
     ],
+    "OpenEEL.plotly.barChart": [
+        "barChart"
+    ],
     "OpenEEL.Algorithms.Sentinel1.removeS1BlackBorders": [
         "cleanS1"
     ],
     "OpenEEL.Element.addTimeProperties": [
         "customPlotly"
+    ],
+    "OpenEEL.plotly.donutChart": [
+        "donutChart"
+    ],
+    "OpenEEL.Array.dtwDistance": [
+        "dtwDistance"
+    ],
+    "OpenEEL.Array.matrixUnit": [
+        "dtwDistance",
+        "matrixUnit"
     ],
     "OpenEEL.Export.ImageCollection.asImageToAsset": [
         "exportImageCollection"
@@ -46,17 +65,17 @@
     "OpenEEL.Image.semivariogram": [
         "kriging"
     ],
-    "OpenEEL.Array.matrixUnit": [
-        "matrixUnit"
-    ],
     "OpenEEL.Image.arrayMatrixUnit": [
         "matrixUnit"
     ],
     "OpenEEL.ImageCollection.movingWindow": [
         "movingWindow"
     ],
+    "OpenEEL.plotly.histogram": [
+        "overlaidHistogram"
+    ],
     "OpenEEL.plotly.scatter": [
         "plotlyScatterPlot"
     ],
-    "timeSinceEpoch": 1684999557990
+    "timeSinceEpoch": 1686474036239
 }
