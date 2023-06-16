@@ -1,0 +1,11 @@
+var oeel=require('users/OEEL/lib:loadAll');
+
+var i = 14;
+var A = ee.Image.constant(ee.Array([2, 6, 18, 46, 4, 9]));
+var B = ee.Image.constant(ee.Array([-22, 17, 1, 87, 14, 3, 11, 36]));
+
+var result = oeel.Image.arrayDTW(A, B, i);
+
+Map.addLayer(result);
+
+print('list of functions used',oeel.refs());
