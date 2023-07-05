@@ -1,0 +1,34 @@
+var oeel=require('users/OEEL/lib:loadAll');
+
+var geometry = ee.Geometry.Point({
+		coords:[11.410681629967877,47.264919504185855],
+//	proj:,
+})
+
+var s2Sr = ee.ImageCollection('COPERNICUS/S2_SR')
+            .filterDate('2023-04-07','2023-05-07').filterBounds(geometry);
+var s2Clouds = ee.ImageCollection('COPERNICUS/S2_CLOUD_PROBABILITY');
+
+var MAX_CLOUD_PROBABILITY = 65;
+
+function maskClouds(img) {
+  var clouds = ee.Image(img.get('cloud_mask')).select('probability');
+  var isNotCloud = clouds.lt(MAX_CLOUD_PROBABILITY);
+  return img.updateMask(isNotCloud);
+}
+
+var s2SrWithCloudMask = ee.Join.saveFirst('cloud_mask').apply({
+  primary: s2Sr,
+  secondary: s2Clouds,
+  condition: ee.Filter.equals({leftField: 'system:index', rightField: 'system:index'})
+});
+
+var s2CloudMasked = ee.ImageCollection(s2SrWithCloudMask).map(maskClouds);
+
+var result = oeel.ImageCollection.toArrayPerBandWithMask({imCol: s2CloudMasked});
+
+Map.centerObject(s2Sr.first())
+Map.addLayer(result);
+print(result);
+
+print('list of functions used',oeel.refs());
