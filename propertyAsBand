@@ -1,0 +1,14 @@
+var oeel=require('users/OEEL/lib:loadAll');
+
+var S2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
+var image = S2.first();
+var properties = ['WATER_PERCENTAGE','VEGETATION_PERCENTAGE'];
+
+var image_result = oeel.Image.propertyAsBand({
+image: image,
+properties: properties
+});
+
+print(image_result);
+
+print('list of functions used',oeel.refs());
